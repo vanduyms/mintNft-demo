@@ -96,7 +96,6 @@ export const getCurrentAddressConnected = async() => {
 
 export const mintNFT = async(pathFile, name, description) => {
   const metadata = new Object();
-  // metadata.image = url;
   metadata.name = name;
   metadata.description = description;
 
