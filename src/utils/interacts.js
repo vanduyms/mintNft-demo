@@ -1,9 +1,7 @@
+/* eslint-disable no-new-object */
 import { env } from "../env";
-import { pinFiletoIPFS, pinJSONtoIPFS } from "./pinata";
+import { pinJSONtoIPFS } from "./pinata";
 const ethers = require("ethers");
-
-// const contractABI = require("../contract-abi.json");
-// const contractABI = require("../NFT.json");
 
 const contract = require("../MyNFT.json");
 
@@ -41,7 +39,7 @@ export const connectWallet = async() => {
                 <span>
                     <p>
                         {"Please connect the Metamask Wallet"}
-                        <a target="_blank" href="https://metamask.io/download/"> 
+                        <a target="_blank" href="https://metamask.io/download/" rel="noreferrer"> 
                             You have to install Metamask on your browser
                         </a>
                     </p>
@@ -80,7 +78,7 @@ export const getCurrentAddressConnected = async() => {
           address: "",
           status: (
             <span>
-                <a target="_blank" href={`https://metamask.io/download.html`}>
+                <a target="_blank" href={`https://metamask.io/download.html`} rel="noreferrer">
                   You must install Metamask, a virtual Ethereum wallet, in your
                   browser.
                 </a>
@@ -90,22 +88,19 @@ export const getCurrentAddressConnected = async() => {
       }
 }
 
-// export const mint = async(signers, tokenURI) => {
-
-// }
-
-export const mintNFT = async(pathFile, name, description) => {
+export const mintNFT = async(pathFile, name, description) => {  
   const metadata = new Object();
   metadata.name = name;
+  metadata.image = pathFile
   metadata.description = description;
 
-  const responseImage = await pinFiletoIPFS(pathFile);
-  let imgPath;
-  if (responseImage.success) {
-    imgPath = responseImage.pinataUrl;
-  }
+  // const responseImage = await pinFiletoIPFS(pathFile);
+  // let imgPath;
+  // if (responseImage.success) {
+  //   imgPath = responseImage.pinataUrl;
+  // }
 
-  metadata.image = imgPath;
+  // metadata.image = imgPath;
 
   const response = await pinJSONtoIPFS(metadata);
   let tokenURI;
@@ -113,24 +108,17 @@ export const mintNFT = async(pathFile, name, description) => {
     tokenURI = response.pinataUrl;
   }
 
-  if (imgPath && tokenURI) {
-    try {
-    const nftTxn = await myNFTContract.mintNFT(signers.address, tokenURI)
-    await nftTxn.wait()
+  try {
+    const nftTxn = await myNFTContract.mintNFT(signers.address, tokenURI);
+    await nftTxn.wait();
     return {
         success: true, 
         status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`
     };
-    } catch (error) {
-      return {
-        success: false,
-        status: `Error: ${error.message}`
-      }
-    }
-  } else {
+  } catch (error) {
     return {
       success: false,
-      status: `Error: Cannot create metadata`
+      status: `Error: ${error.message}`
     }
   }
 }

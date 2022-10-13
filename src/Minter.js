@@ -1,14 +1,23 @@
-/* eslint-disable react/jsx-no-target-blank */
+/* eslint-disable jsx-a11y/img-redundant-alt */
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from 'react';
 import { connectWallet, mintNFT, } from './utils/interacts';
 
 function Minter(props) {
     const [walletAddress, setWalletAddress] = useState("");
     const [status, setStatus] = useState("");
-    // const [url, setUrl] = useState("");
     const [name, setName ] = useState("");
     const [description, setDescription] = useState("");
-    const [pathFile, setPathFile] = useState("");
+    const [selectedFile, setSelectedFile] = useState("");
+
+    const changeHandler = (e) => {
+      var reader = new FileReader();
+      reader.onload = function (e){
+        setSelectedFile(reader.result);
+      }
+
+      reader.readAsDataURL(e.target.files[0]);
+    }
 
     function addWalletListener() {
         if (window.ethereum) {
@@ -25,7 +34,7 @@ function Minter(props) {
           setStatus(
             <p>
               {" "}
-              <a target="_blank" href={`https://metamask.io/download.html`}>
+              <a target="_blank" href={`https://metamask.io/download.html`} rel="noreferrer">
                 You must install Metamask, a virtual Ethereum wallet, in your
                 browser.
               </a>
@@ -35,13 +44,12 @@ function Minter(props) {
     }
 
   const onMintPressed = async() => {
-    const {status} =  await mintNFT(pathFile, name, description);
+    const {status} =  await mintNFT(selectedFile, name, description);
 
     console.log(status);
     setStatus(status);
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect( () => {
       // const {address, status} = getCurrentAddressConnected();
       // setWalletAddress(address);
@@ -57,7 +65,7 @@ function Minter(props) {
   };
 
   const checkInput = () => {
-    return name.length > 0 && pathFile.length > 0 && description.length > 0 && walletAddress.length > 0;
+    return name.length > 0 && selectedFile.length > 0 && description.length > 0 && walletAddress.length > 0;
   }
 
   return (
@@ -78,16 +86,12 @@ function Minter(props) {
 
         <h1 className='title'>Mint NFT</h1>
         <form>
-            <h2>Link to assets: </h2>
-            {/* <input 
-                type="text"
-                placeholder="e.g. https://gateway.pinata.cloud/ipfs/<hash>" 
-                onChange={e => setUrl(e.target.value)}
-            /> */}
+            <h2>Choose an image: </h2>
+            {selectedFile ? <img src={selectedFile} width={200} height={200} alt="Image preview"/> : []}
             <input 
               type="file"
               name="image"
-              onChange={(e) => setPathFile(e.target.value)}
+              onChange={(e) => changeHandler(e)}
               accept='image/png, image/jpeg'
             />
 
@@ -109,8 +113,14 @@ function Minter(props) {
           className={`${!checkInput() ? "disabled" : ""}`} 
           disabled={!checkInput()} 
           id='mintBtn' 
-          onClick={onMintPressed}
-            // onClick={() => console.log(pathFile)}
+          onClick={() => {
+            setStatus("Loading...");
+            onMintPressed();
+            // setSelectedFile("");
+            // setWalletAddress("");
+            // setName("");
+            // setDescription("");
+          }}
         >
             Mint NFT
         </button>

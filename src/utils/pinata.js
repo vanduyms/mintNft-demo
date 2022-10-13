@@ -8,11 +8,8 @@ const secret = env.PINATA_SECRET_KEY;
 const FormData = require('form-data');
 
 export const pinFiletoIPFS = async(path) => {
-  console.log(path)
-  console.log(readFile(path))
   var data = new FormData();
   data.append('file', readFile(path));
-  console.log(data)
 
   var config = {
     method: 'post',
