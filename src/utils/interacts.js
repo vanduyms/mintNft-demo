@@ -1,17 +1,21 @@
 /* eslint-disable no-new-object */
 import { env } from "../env";
 import { pinJSONtoIPFS } from "./pinata";
-const ethers = require("ethers");
+
+const {createAlchemyWeb3}  = require("@alch/alchemy-web3");
+const web3 = createAlchemyWeb3(env.ALCHEMY_KEY);
+
 
 const contract = require("../MyNFT.json");
 
-const provider = new ethers.providers.AlchemyProvider("goerli", env.API_KEY);
-const signers = new ethers.Wallet(env.PRIVATE_KEY, provider);
 
 const abi = contract.abi;
 const contractAddress = "0xeaadaA7880BDB0F491f994A6A52D76e7B1D81127";
 
-const myNFTContract = new ethers.Contract(contractAddress, abi, signers);
+// const ethers = require("ethers");
+// const provider = new ethers.providers.AlchemyProvider("goerli", env.API_KEY);
+// const signers = new ethers.Wallet(env.PRIVATE_KEY, provider);
+// const myNFTContract = new ethers.Contract(contractAddress, abi, signers);
 
 export const connectWallet = async() => {
     if (window.ethereum) {
@@ -94,6 +98,7 @@ export const mintNFT = async(pathFile, name, description) => {
   metadata.image = pathFile
   metadata.description = description;
 
+  // Upload image on IPFS
   // const responseImage = await pinFiletoIPFS(pathFile);
   // let imgPath;
   // if (responseImage.success) {
@@ -102,18 +107,35 @@ export const mintNFT = async(pathFile, name, description) => {
 
   // metadata.image = imgPath;
 
+  window.contract = await new web3.eth.Contract(abi, contractAddress);
+
   const response = await pinJSONtoIPFS(metadata);
   let tokenURI;
   if (response.success) {
     tokenURI = response.pinataUrl;
   }
 
+  const transactionParameters = {
+    to: contractAddress, 
+    from: window.ethereum.selectedAddress, 
+    gasLimit: 500_000,
+    data: window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI()
+  };
+
   try {
-    const nftTxn = await myNFTContract.mintNFT(signers.address, tokenURI);
-    await nftTxn.wait();
+    // const nftTxn = await myNFTContract.mintNFT(signers.address, tokenURI);
+    // await nftTxn.wait();
+
+    const txHash = await window.ethereum
+      .request({
+        method: 'eth_sendTransaction',
+        params: [transactionParameters],
+    });
+
     return {
         success: true, 
-        status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`
+        // status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`
+        status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${txHash}`
     };
   } catch (error) {
     return {
