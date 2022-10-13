@@ -10,7 +10,7 @@ const contract = require("../MyNFT.json");
 
 
 const abi = contract.abi;
-const contractAddress = "0xeaadaA7880BDB0F491f994A6A52D76e7B1D81127";
+const contractAddress = "0x2fDEDb2D03eA584ed14DD2C1eFE5400dC1fd978b";
 
 // const ethers = require("ethers");
 // const provider = new ethers.providers.AlchemyProvider("goerli", env.API_KEY);
@@ -118,6 +118,8 @@ export const mintNFT = async(pathFile, name, description) => {
   const transactionParameters = {
     to: contractAddress, 
     from: window.ethereum.selectedAddress, 
+    // gasPrice: '0x02710', 
+    // gas: '0x02710',
     gasLimit: 500_000,
     data: window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI()
   };

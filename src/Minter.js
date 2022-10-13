@@ -4,44 +4,44 @@ import React, { useEffect, useState } from 'react';
 import { connectWallet, mintNFT, } from './utils/interacts';
 
 function Minter(props) {
-    const [walletAddress, setWalletAddress] = useState("");
-    const [status, setStatus] = useState("");
-    const [name, setName ] = useState("");
-    const [description, setDescription] = useState("");
-    const [selectedFile, setSelectedFile] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [status, setStatus] = useState("");
+  const [name, setName ] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedFile, setSelectedFile] = useState("");
 
-    const changeHandler = (e) => {
-      var reader = new FileReader();
-      reader.onload = function (e){
-        setSelectedFile(reader.result);
+  const changeHandler = (e) => {
+    var reader = new FileReader();
+    reader.onload = function (e){
+      setSelectedFile(reader.result);
+    }
+
+    reader.readAsDataURL(e.target.files[0]);
+  }
+
+  function addWalletListener() {
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", (accounts) => {
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0]);
+            setStatus("👆🏽 Write a message in the text-field above.");
+          } else {
+            setWalletAddress("");
+            setStatus("🦊 Connect to Metamask using the top right button.");
+          }
+        });
+      } else {
+        setStatus(
+          <p>
+            {" "}
+            <a target="_blank" href={`https://metamask.io/download.html`} rel="noreferrer">
+              You must install Metamask, a virtual Ethereum wallet, in your
+              browser.
+            </a>
+          </p>
+        );
       }
-
-      reader.readAsDataURL(e.target.files[0]);
-    }
-
-    function addWalletListener() {
-        if (window.ethereum) {
-          window.ethereum.on("accountsChanged", (accounts) => {
-            if (accounts.length > 0) {
-              setWalletAddress(accounts[0]);
-              setStatus("👆🏽 Write a message in the text-field above.");
-            } else {
-              setWalletAddress("");
-              setStatus("🦊 Connect to Metamask using the top right button.");
-            }
-          });
-        } else {
-          setStatus(
-            <p>
-              {" "}
-              <a target="_blank" href={`https://metamask.io/download.html`} rel="noreferrer">
-                You must install Metamask, a virtual Ethereum wallet, in your
-                browser.
-              </a>
-            </p>
-          );
-        }
-    }
+  }
 
   const onMintPressed = async() => {
     const {status} =  await mintNFT(selectedFile, name, description);
