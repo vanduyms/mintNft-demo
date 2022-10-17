@@ -116,10 +116,6 @@ function Minter(props) {
           onClick={() => {
             setStatus("Loading...");
             onMintPressed();
-            // setSelectedFile("");
-            // setWalletAddress("");
-            // setName("");
-            // setDescription("");
           }}
         >
             Mint NFT

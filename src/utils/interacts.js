@@ -5,17 +5,8 @@ import { pinJSONtoIPFS } from "./pinata";
 const {createAlchemyWeb3}  = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(env.ALCHEMY_KEY);
 
-
 const contract = require("../MyNFT.json");
-
-
 const abi = contract.abi;
-const contractAddress = "0x2fDEDb2D03eA584ed14DD2C1eFE5400dC1fd978b";
-
-// const ethers = require("ethers");
-// const provider = new ethers.providers.AlchemyProvider("goerli", env.API_KEY);
-// const signers = new ethers.Wallet(env.PRIVATE_KEY, provider);
-// const myNFTContract = new ethers.Contract(contractAddress, abi, signers);
 
 export const connectWallet = async() => {
     if (window.ethereum) {
@@ -92,57 +83,75 @@ export const getCurrentAddressConnected = async() => {
       }
 }
 
+export const getContractAddress = async() => {
+    try{
+      let contractAddress;
+      window.contract = await new web3.eth.Contract(abi);
+      await window.contract.deploy({data: contract.bytecode}).send({
+        from: window.ethereum.selectedAddress,
+        gasPrice:web3.utils.toWei('0.00003', 'ether')}
+      ).then((contract) => contractAddress = contract._address)
+      console.log(contractAddress);
+      return {
+        success: true,
+        status: contractAddress,
+      }
+    } catch (error){
+      return {
+        success: false,
+        status: error.message,
+      }
+    }
+}
+
 export const mintNFT = async(pathFile, name, description) => {  
   const metadata = new Object();
   metadata.name = name;
   metadata.image = pathFile
   metadata.description = description;
 
-  // Upload image on IPFS
-  // const responseImage = await pinFiletoIPFS(pathFile);
-  // let imgPath;
-  // if (responseImage.success) {
-  //   imgPath = responseImage.pinataUrl;
-  // }
+  const responseContract = await getContractAddress();
 
-  // metadata.image = imgPath;
+  if (responseContract.success) {
+    const contractAddress = responseContract.status;
 
-  window.contract = await new web3.eth.Contract(abi, contractAddress);
+    window.contract = await new web3.eth.Contract(abi, contractAddress);
 
-  const response = await pinJSONtoIPFS(metadata);
-  let tokenURI;
-  if (response.success) {
-    tokenURI = response.pinataUrl;
-  }
+    const response = await pinJSONtoIPFS(metadata);
+    let tokenURI;
+    if (response.success) {
+      tokenURI = response.pinataUrl;
+    }
 
-  const transactionParameters = {
-    to: contractAddress, 
-    from: window.ethereum.selectedAddress, 
-    // gasPrice: '0x02710', 
-    // gas: '0x02710',
-    gasLimit: 500_000,
-    data: window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI()
-  };
-
-  try {
-    // const nftTxn = await myNFTContract.mintNFT(signers.address, tokenURI);
-    // await nftTxn.wait();
-
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-    });
-
-    return {
-        success: true, 
-        // status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`
-        status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${txHash}`
+    const transactionParameters = {
+      to: contractAddress, 
+      from: window.ethereum.selectedAddress, 
+      
+      gasLimit: 227431_000,
+      data: window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI()
     };
-  } catch (error) {
+
+    try {
+      const txHash = await window.ethereum
+        .request({
+          method: 'eth_sendTransaction',
+          params: [transactionParameters],
+      });
+
+      return {
+          success: true, 
+          status: `NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${txHash}`
+      };
+    } catch (error) {
+      return {
+        success: false,
+        status: `Error: ${error.message}`
+      }
+    }
+  } else {
     return {
       success: false,
-      status: `Error: ${error.message}`
+      status: responseContract.status
     }
   }
 }

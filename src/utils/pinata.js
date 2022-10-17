@@ -49,7 +49,7 @@ export const pinJSONtoIPFS = async (data) => {
     const res = await axios(config);
     return {
       success: true,
-      pinataUrl: "https://gateway.pinata.cloud/ipfs/" + res.data.IpfsHash,
+      pinataUrl: "https://gateway.pinata.cloud/ipfs/" + res.data.IpfsHash
     }
   } catch(err) {
     return {
