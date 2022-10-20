@@ -5,12 +5,12 @@
 
 ### Steps:
 
-# 1. "git clone " to clone this project on you computer
+## 1. "git clone " to clone this project on you computer
 
-# 2. Open terminal, cd this project and "npm install" to install all packages
+## 2. Open terminal, cd this project and "npm install" to install all packages
 
-# 3. Change ACCOUNT_ADDRESS, PRIVATE_KEY, CONTRACT_ADDRESS in 'env.js'
+## 3. Change ACCOUNT_ADDRESS, PRIVATE_KEY, CONTRACT_ADDRESS in 'env.js'
 
-# 4. Using "npm start" to run website on localhost on your computer
+## 4. Using "npm start" to run website on localhost on your computer
 
-# 5. Enjoy it
+## 5. Enjoy it
