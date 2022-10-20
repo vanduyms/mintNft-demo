@@ -1,6 +1,8 @@
 ## Getting started with web demo mint NFT
 
-Note: 1. This is repo mint NFT by using account DEV, don't approve need for task mint. 
+### Note: 
+
+      1. This is repo mint NFT by using account DEV, don't approve need for task mint. 
       
       
       2. You need install Metamask extensions on your browser and login Metamask wallet, switch to Goerli network
