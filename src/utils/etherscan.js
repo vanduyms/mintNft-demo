@@ -2,72 +2,72 @@ import { env } from "../env";
 import axios from "axios";
 
 
-// Get Info Transaction by Hash
-export const getInfoTransaction = async (txHash) => {
-    const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}&apikey=${env.API_ETHERSCAN}`;
-    try {
-        const response = await axios.get(url);
-        return {
-            success: true,
-            result: response.data
-        }
-    } catch (err) {
-        return {
-            success: false,
-            result: err.message
-        }
-    }
-}
+// // Get Info Transaction by Hash
+// export const getInfoTransaction = async (txHash) => {
+//     const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}&apikey=${env.API_ETHERSCAN}`;
+//     try {
+//         const response = await axios.get(url);
+//         return {
+//             success: true,
+//             result: response.data
+//         }
+//     } catch (err) {
+//         return {
+//             success: false,
+//             result: err.message
+//         }
+//     }
+// }
 
-// Get tokenID by id in transaction info => info.id
+// // Get tokenID by id in transaction info => info.id
 
 
 
-// Get info from a block Number
-export const getInfoBlockNumber = async(txHash) => {
-    let blockNumber;
+// // Get info from a block Number
+// export const getInfoBlockNumber = async(txHash) => {
+//     let blockNumber;
 
-    const infoTransaction = await getInfoBlockNumber(txHash);
-    if (infoTransaction.success) {
-        blockNumber = infoTransaction.result.blockNumber;
+//     const infoTransaction = await getInfoBlockNumber(txHash);
+//     if (infoTransaction.success) {
+//         blockNumber = infoTransaction.result.blockNumber;
 
-        const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${blockNumber}&boolean=true&&apikey=${env.API_ETHERSCAN}`;
-        try {
-            const response = await axios.get(url);
-            return {
-                success: true,
-                result: response.data.result
-            }
-        } catch (err) {
-            return {
-                success: false,
-                result: err.message
-            }
-        }
-    } else {
-        return {
-            success: false,
-            result: infoTransaction.result,
-        }
-    }
-}
+//         const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${blockNumber}&boolean=true&&apikey=${env.API_ETHERSCAN}`;
+//         try {
+//             const response = await axios.get(url);
+//             return {
+//                 success: true,
+//                 result: response.data.result
+//             }
+//         } catch (err) {
+//             return {
+//                 success: false,
+//                 result: err.message
+//             }
+//         }
+//     } else {
+//         return {
+//             success: false,
+//             result: infoTransaction.result,
+//         }
+//     }
+// }
 
-// Get info transaction receipt
-export const getTransactionReceipt = async(txHash) => {
-    const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getTransactionReceipt&txhash=${txHash}&apikey=${env.API_ETHERSCAN}`;
-    try {
-        const response = await axios.get(url);
-        return {
-            success: true,
-            result: response.data
-        }
-    } catch (err) {
-        return {
-            success: false,
-            result: err.message
-        }
-    }
-}
+// // Get info transaction receipt
+// export const getTransactionReceipt = async(txHash) => {
+//     const url = `https://api-goerli.etherscan.io/api?module=proxy&action=eth_getTransactionReceipt&txhash=${txHash}&apikey=${env.API_ETHERSCAN}`;
+//     try {
+//         const response = await axios.get(url);
+//         return {
+//             success: true,
+//             result: response.data
+//         }
+//     } catch (err) {
+//         return {
+//             success: false,
+//             result: err.message
+//         }
+//     }
+// }
 
 // Transaction Fee = (baseFeePerGas + maxPriorityFeePerGas) * gasUsed
 // baseFeePerGas get from blockNumber info
@@ -92,7 +92,7 @@ export const getTransactionFee = async(txHash) => {
         
         const transactionFee = (baseFeePerGas + maxPriorityFeePerGas) * gasUsed / (10**4);
 
-        const getAllTransaction = await axios.get(`https://api-goerli.etherscan.io/api?module=account&action=tokennfttx&contractaddress=${env.CONTRACT_ADDRESS}&address=${`0x4300050acb37969193323dB45AC8262Ed3CD2880`}&page=1&offset=1000&startblock=0&endblock=99999999&sort=asc&apikey=${env.API_ETHERSCAN}`)
+        const getAllTransaction = await axios.get(`https://api-goerli.etherscan.io/api?module=account&action=tokennfttx&contractaddress=${env.CONTRACT_ADDRESS}&address=${env.ACCOUNT_ADDRESS}&page=1&offset=1000&startblock=0&endblock=99999999&sort=asc&apikey=${env.API_ETHERSCAN}`)
             .then(result => result.data.result)
 
         const tokenID = getAllTransaction[getAllTransaction.length - 1].tokenID + 1;
