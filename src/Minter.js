@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from 'react';
-import { connectWallet, mintNFT, } from './utils/interacts';
+import { connectWallet, getResult, } from './utils/interacts';
 
 function Minter(props) {
   const [walletAddress, setWalletAddress] = useState("");
@@ -44,7 +44,7 @@ function Minter(props) {
   }
 
   const onMintPressed = async() => {
-    const {status} =  await mintNFT(selectedFile, name, description);
+    const {status} =  await getResult(selectedFile, name, description);
 
     console.log(status);
     setStatus(status);
