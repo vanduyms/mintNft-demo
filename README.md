@@ -2,7 +2,7 @@
 
 Note: You need install Metamask extensions on your browser and login Metamask wallet, switch to Goerli network
 
-###Steps:
+### Steps:
 
 1. "git clone " to clone this project on you computer
 
